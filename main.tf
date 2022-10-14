@@ -15,6 +15,13 @@ module "vpc" {
 
 }
 
+module "ssh_security_group" {
+  source = "terraform-aws-modules/security-group/aws//modules/ssh"
+  name   = "sg"
+  vpc_id = module.vpc.vpc_id
+
+}
+
 module "ec2_instances" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "3.5.0"
@@ -24,8 +31,8 @@ module "ec2_instances" {
 
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t2.micro"
-  vpc_security_group_ids = [module.vpc.default_security_group_id]
+  vpc_security_group_ids = [module.ssh_security_group.security_group_id]
   subnet_id              = module.vpc.public_subnets[0]
-
+ 
 
 }
